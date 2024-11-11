@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시물 상세 보기</title>
+
+    <!-- Bootstrap CSS 로컬 파일 -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <h1 class="my-4">게시물 상세 보기</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <!-- 제목 -->
+            <div class="mb-3">
+                <h4 class="card-title">제목:</h4>
+                <p class="card-text" th:text="${post.title}"></p>
+            </div>
+
+            <!-- 작성자 -->
+            <div class="mb-3">
+                <h5 class="card-subtitle text-muted">작성자:</h5>
+                <p class="card-text" th:text="${post.author}"></p>
+            </div>
+
+            <!-- 내용 -->
+            <div class="mb-3">
+                <h5 class="card-title">내용:</h5>
+                <p class="card-text" th:text="${post.content}"></p>
+            </div>
+
+            <!-- 버튼들 -->
+            <div class="d-flex justify-content-start mt-4">
+                <a th:href="@{/posts}" class="btn btn-secondary me-2">목록으로 돌아가기</a>
+                <a th:href="@{/posts/edit/{id}(id=${post.id})}" class="btn btn-primary">수정하기</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS 로컬 파일 -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>
