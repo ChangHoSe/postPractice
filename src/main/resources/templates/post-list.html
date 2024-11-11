@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시물 목록</title>
+
+    <!-- Bootstrap CSS 로컬 파일 -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <h1 class="my-4">게시물 목록</h1>
+
+    <!-- 게시물 목록 테이블 -->
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>내용</th>
+            <th>수정</th>
+            <th>삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thymeleaf를 이용해 게시물 목록을 반복 처리 -->
+        <tr th:each="post : ${posts}">
+            <td><a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a></td>
+            <td th:text="${post.author}"></td>
+            <td th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'MM/dd') : 'N/A'}"></td>
+            <td th:text="${post.content.length() > 5 ? post.content.substring(0, 5) + '...' : post.content}"></td>
+            <td><a class="btn btn-primary" th:href="@{/posts/edit/{id}(id=${post.id})}">수정</a></td>
+            <td>
+                <form th:action="@{/posts/{id}(id=${post.id})}" method="post">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <a class="btn btn-success" href="/posts/new">새 게시물 등록</a>
+    </div>
+
+</div>
+
+<!-- Bootstrap JS 로컬 파일 -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

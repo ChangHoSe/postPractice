@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시물 작성 및 수정</title>
+
+    <!-- Bootstrap CSS 로컬 파일 -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <h1 class="my-4" th:text="${post.id != null ? '게시물 수정' : '새 게시물 등록'}"></h1>
+
+    <form th:action="@{/posts/save}" method="post">
+        <input type="hidden" name="id" th:value="${post.id}">
+
+        <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" class="form-control" id="title" name="title" th:value="${post.title}" required>
+        </div>
+        <div class="mb-3">
+            <label for="author" class="form-label">작성자</label>
+            <input type="text" class="form-control" id="author" name="author" th:value="${post.author}" required>
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea class="form-control" id="content" name="content" rows="5" required th:text="${post.content}"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">저장</button>
+        <a class="btn btn-secondary" th:href="@{/posts}">취소</a>
+    </form>
+</div>
+
+<!-- Bootstrap JS 로컬 파일 -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>
