@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시물 상세 보기</title>
+
+    <!-- Bootstrap CSS 로컬 파일 -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <h1 class="my-4">게시물 상세 보기</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <!-- 제목 -->
+            <div class="mb-3">
+                <h4 class="card-title">제목:</h4>
+                <p class="card-text" th:text="${post.title}"></p>
+            </div>
+
+            <!-- 작성자 -->
+            <div class="mb-3">
+                <h5 class="card-subtitle text-muted">작성자:</h5>
+                <p class="card-text" th:text="${post.author}"></p>
+            </div>
+
+            <!-- 내용 -->
+            <div class="mb-3">
+                <h5 class="card-title">내용:</h5>
+                <p class="card-text" th:text="${post.content}"></p>
+            </div>
+
+            <!-- 좋아요 버튼 -->
+            <p>좋아요: <span th:text="${post.likeCount}">0</span></p>
+
+            <form th:action="@{/posts/like/{id}(id=${post.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-outline-success">좋아요</button>
+            </form>
+
+            <!-- 버튼들 -->
+            <div class="d-flex justify-content-start mt-4">
+                <a th:href="@{/posts}" class="btn btn-secondary me-2">목록으로 돌아가기</a>
+                <a th:href="@{/posts/edit/{id}(id=${post.id})}" class="btn btn-primary">수정하기</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 댓글 작성 폼 -->
+    <div class="mt-4">
+        <h3>댓글 작성</h3>
+        <form th:action="@{/posts/comment/{postId}(postId=${post.id})}" method="post">
+            <div class="mb-3">
+                <label for="author" class="form-label">작성자</label>
+                <input type="text" class="form-control" id="author" name="author" required>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">내용</label>
+                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">댓글 작성</button>
+        </form>
+    </div>
+
+    <!-- 댓글 목록 -->
+    <div class="mt-4">
+        <h3>댓글 목록</h3>
+        <ul class="list-group">
+            <!-- 댓글 목록을 반복하여 출력 -->
+            <li class="list-group-item" th:each="comment : ${comments}">
+                <strong th:text="${comment.author}">작성자</strong>
+                <p th:text="${comment.content}">댓글 내용</p>
+
+                <!-- 댓글 수정 버튼 -->
+                <form th:action="@{|/posts/comment/${comment.id}|}" method="post" style="display:inline;">
+                    <input type="hidden" name="_method" value="put" />
+                    <button type="button" class="btn btn-outline-primary btn-sm"
+                            th:attr="data-id=${comment.id}, data-author=${comment.author}, data-content=${comment.content}"
+                            onclick="openUpdateModal(this)">수정</button>
+                </form>
+
+                <!-- 댓글 삭제 버튼 -->
+                <form th:action="@{|/posts/comment/${comment.id}|}" method="post" style="display:inline;">
+                    <input type="hidden" name="_method" value="delete" />
+                    <input type="hidden" name="postId" th:value="${post.id}" />
+                    <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- 댓글 수정 모달 -->
+<div class="modal fade" id="updateCommentModal" tabindex="-1" aria-labelledby="updateCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateCommentModalLabel">댓글 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/posts/comment/0}" method="post" id="updateCommentForm">
+                <div class="modal-body">
+                    <input type="hidden" name="_method" value="put" />
+                    <input type="hidden" id="updatePostId" name="postId" th:value="${post.id}" />
+                    <div class="mb-3">
+                        <label for="updateAuthor" class="form-label">작성자</label>
+                        <input type="text" class="form-control" id="updateAuthor" name="author" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateContent" class="form-label">내용</label>
+                        <textarea class="form-control" id="updateContent" name="content" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">저장</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    // 댓글 수정 모달을 여는 함수
+    function openUpdateModal(button) {
+        // 버튼에서 데이터 속성 값을 가져옴
+        const commentId = button.getAttribute('data-id');
+        const author = button.getAttribute('data-author');
+        const content = button.getAttribute('data-content');
+
+        // 모달 입력 필드에 해당 값 설정
+        document.getElementById('updateAuthor').value = author;
+        document.getElementById('updateContent').value = content;
+
+        // 폼의 action 속성 설정
+        document.getElementById('updateCommentForm').action = '/posts/comment/' + commentId;
+
+        // 모달 열기
+        var myModal = new bootstrap.Modal(document.getElementById('updateCommentModal'));
+        myModal.show();
+    }
+</script>
+
+</body>
+</html>
